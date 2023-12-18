@@ -16,8 +16,15 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -117,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void captureImage() {
         if (imageCapture != null) {
+            Toast.makeText(this, "Capture One", Toast.LENGTH_SHORT).show();
             imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
                 @Override
                 public void onCaptureSuccess(@NonNull ImageProxy image) {
@@ -137,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void captureImageTwo() {
         if (imageCapture != null) {
+            Toast.makeText(this, "Capture two", Toast.LENGTH_SHORT).show();
             imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
                 @Override
                 public void onCaptureSuccess(@NonNull ImageProxy image) {
@@ -144,10 +153,16 @@ public class MainActivity extends AppCompatActivity {
                     Bitmap bitmap = imageProxyToBitmap(image);
                     imageView2.setImageBitmap(bitmap);
                     image.close();
-                    isCheck();
 
+                    double threshold = 0.80;
+                    double similarity  =  checkImgSimilarity();
+
+                    if (similarity >= threshold) {
+                        Toast.makeText(MainActivity.this, "Images  are same ", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Images are different ", Toast.LENGTH_SHORT).show();
+                    }
                 }
-
                 @Override
                 public void onError(@NonNull ImageCaptureException exception) {
                     super.onError(exception);
@@ -164,10 +179,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void isCheck() {
+    public double isCheckImage() {
 
         Bitmap image1 = ((BitmapDrawable) imageView1.getDrawable()).getBitmap();
         Bitmap image2 = ((BitmapDrawable) imageView2.getDrawable()).getBitmap();
+
         Planar<GrayU8> boofImage1 = ConvertBitmap.bitmapToPlanar(image1, (Planar<GrayU8>) null, GrayU8.class, null);
         Planar<GrayU8> boofImage2 = ConvertBitmap.bitmapToPlanar(image2, (Planar<GrayU8>) null, GrayU8.class, null);
 
@@ -180,15 +196,100 @@ public class MainActivity extends AppCompatActivity {
             }}
         double meanDifference = sum / (diff.width * diff.height);
         Log.d("check percentage", String.valueOf(meanDifference));
-
-        double percentage = 80.0;
-     //   double dynamicThreshold = calculateDynamicThreshold(boofImage1, boofImage2,percentage);
-        if (meanDifference < percentage) {
-            Toast.makeText(this, " Both Images are the same", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Both Images are different", Toast.LENGTH_LONG).show();
-        }
+        return meanDifference;
     }
 
+    public  double checkImgSimilarity() {
+
+        Bitmap bmpIMg1 = ((BitmapDrawable) imageView1.getDrawable()).getBitmap();
+        Bitmap bmpImg2 = ((BitmapDrawable) imageView2.getDrawable()).getBitmap();
+
+        if (isBitmapEmpty(bmpIMg1) || isBitmapEmpty(bmpImg2)) {
+            return 0.0;
+        }
+
+        bmpIMg1 = toGrayscale(bmpIMg1);
+        bmpImg2 = toGrayscale(bmpImg2);
+
+        bmpIMg1 = ThumbnailUtils.extractThumbnail(bmpIMg1, 32, 32);
+        bmpImg2 = ThumbnailUtils.extractThumbnail(bmpImg2, 32, 32);
+
+        int[] pixels1 = getPixelArray(bmpIMg1);
+        int[] pixels2 = getPixelArray(bmpImg2);
+
+        int averageColor1 = getAverageOfPixelArray(pixels1);
+        int averageColor2 = getAverageOfPixelArray(pixels2);
+
+        int[] p1 = getPixelDeviateWeightsArray(pixels1, averageColor1);
+        int[] p2 = getPixelDeviateWeightsArray(pixels2, averageColor2);
+        int hammingDistance = getHammingDistance(p1, p2);
+        double similarity = calSimilarity(hammingDistance);
+        return similarity;
+    }
+
+    public static boolean isBitmapEmpty(Bitmap bitmap) {
+        return bitmap == null || bitmap.getWidth() == 0 || bitmap.getHeight() == 0;
+    }
+
+
+    public static double calSimilarity(int hammingDistance) {
+        int length = 32 * 32;
+        double similarity = (length - hammingDistance) / (double) length;
+        similarity = java.lang.Math.pow(similarity, 2);
+        return similarity;
+    }
+
+    public static Bitmap toGrayscale(Bitmap bmpOriginal) {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height,
+                Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
+
+    public static int getAverageOfPixelArray(int[] pixels) {
+        long sumRed = 0;
+        for (int i = 0; i < pixels.length; i++) {
+            sumRed += Color.red(pixels[i]);
+        }
+        int averageRed = (int) (sumRed / pixels.length);
+        return averageRed;
+    }
+
+    public static int[] getPixelDeviateWeightsArray(int[] pixels,
+                                                    final int averageColor) {
+        int[] dest = new int[pixels.length];
+        for (int i = 0; i < pixels.length; i++) {
+          //  dest[i] = Color.red(pixels[i]) - averageColor > 0  1 : 0;
+            dest[i] = Color.red(pixels[i]) - averageColor > 0 ? 1 : 0;
+
+        }
+        return dest;
+    }
+
+    public static int getHammingDistance(int[] a, int[] b) {
+        int sum = 0;
+        for (int i = 0; i < a.length; i++) {
+          //  sum += a[i] == b[i]  0 : 1;
+            sum += (a[i] == b[i]) ? 0 : 1;
+        }
+        return sum;
+    }
+
+
+    private static int[] getPixelArray(Bitmap bmp) {
+        int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
+        bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+        return pixels;
+    }
 
 }
