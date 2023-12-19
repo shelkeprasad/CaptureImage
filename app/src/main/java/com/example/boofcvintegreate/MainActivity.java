@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
@@ -155,9 +156,10 @@ public class MainActivity extends AppCompatActivity {
                     image.close();
 
                     double threshold = 0.80;
+                    double min  = 0.50;
                     double similarity  =  checkImgSimilarity();
 
-                    if (similarity >= threshold) {
+                    if (similarity >= min) {
                         Toast.makeText(MainActivity.this, "Images  are same ", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(MainActivity.this, "Images are different ", Toast.LENGTH_SHORT).show();
@@ -211,9 +213,6 @@ public class MainActivity extends AppCompatActivity {
         bmpIMg1 = toGrayscale(bmpIMg1);
         bmpImg2 = toGrayscale(bmpImg2);
 
-        bmpIMg1 = ThumbnailUtils.extractThumbnail(bmpIMg1, 32, 32);
-        bmpImg2 = ThumbnailUtils.extractThumbnail(bmpImg2, 32, 32);
-
         int[] pixels1 = getPixelArray(bmpIMg1);
         int[] pixels2 = getPixelArray(bmpImg2);
 
@@ -223,7 +222,8 @@ public class MainActivity extends AppCompatActivity {
         int[] p1 = getPixelDeviateWeightsArray(pixels1, averageColor1);
         int[] p2 = getPixelDeviateWeightsArray(pixels2, averageColor2);
         int hammingDistance = getHammingDistance(p1, p2);
-        double similarity = calSimilarity(hammingDistance);
+        double similarity = calSimilarity(hammingDistance, bmpIMg1.getWidth() * bmpIMg1.getHeight());
+
         return similarity;
     }
 
@@ -231,13 +231,12 @@ public class MainActivity extends AppCompatActivity {
         return bitmap == null || bitmap.getWidth() == 0 || bitmap.getHeight() == 0;
     }
 
+  public static double calSimilarity(int hammingDistance, int imageArea) {
+      double similarity = (imageArea - hammingDistance) / (double) imageArea;
+      similarity = Math.pow(similarity, 2);
+      return similarity;
+  }
 
-    public static double calSimilarity(int hammingDistance) {
-        int length = 32 * 32;
-        double similarity = (length - hammingDistance) / (double) length;
-        similarity = java.lang.Math.pow(similarity, 2);
-        return similarity;
-    }
 
     public static Bitmap toGrayscale(Bitmap bmpOriginal) {
         int width, height;
@@ -269,7 +268,6 @@ public class MainActivity extends AppCompatActivity {
                                                     final int averageColor) {
         int[] dest = new int[pixels.length];
         for (int i = 0; i < pixels.length; i++) {
-          //  dest[i] = Color.red(pixels[i]) - averageColor > 0  1 : 0;
             dest[i] = Color.red(pixels[i]) - averageColor > 0 ? 1 : 0;
 
         }
@@ -279,17 +277,13 @@ public class MainActivity extends AppCompatActivity {
     public static int getHammingDistance(int[] a, int[] b) {
         int sum = 0;
         for (int i = 0; i < a.length; i++) {
-          //  sum += a[i] == b[i]  0 : 1;
             sum += (a[i] == b[i]) ? 0 : 1;
         }
         return sum;
     }
-
-
     private static int[] getPixelArray(Bitmap bmp) {
         int[] pixels = new int[bmp.getWidth() * bmp.getHeight()];
         bmp.getPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
         return pixels;
     }
-
 }
