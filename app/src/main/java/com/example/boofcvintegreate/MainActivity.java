@@ -31,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
