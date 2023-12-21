@@ -13,6 +13,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +28,7 @@ import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -66,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         captureButton.setOnClickListener(view -> captureImage());
-        captureButtontwo.setOnClickListener(view -> captureImageTwo());
-
+        //  captureButtontwo.setOnClickListener(view -> captureImageTwo());
+        captureButtontwo.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, Imagesize.class)));
     }
 
     private void initializeCamera() {
@@ -154,11 +157,11 @@ public class MainActivity extends AppCompatActivity {
                     imageView2.setImageBitmap(bitmap);
                     image.close();
 
-                    double threshold = 0.80;
-                    double min  = 0.50;
+                    double threshold = 0.85;
+                    double min  = 0.90;
                     double similarity  =  checkImgSimilarity();
 
-                    if (similarity >= min) {
+                    if (similarity >= threshold) {
                         Toast.makeText(MainActivity.this, "Images  are same ", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(MainActivity.this, "Images are different ", Toast.LENGTH_SHORT).show();
@@ -178,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
         buffer.get(bytes);
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
+
 
 
     public double isCheckImage() {

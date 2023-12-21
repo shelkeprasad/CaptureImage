@@ -32,6 +32,9 @@
         android:theme="@style/Theme.Boofcvintegreate"
         tools:targetApi="31">
         <activity
+            android:name=".Imagesize"
+            android:exported="false" />
+        <activity
             android:name=".RotateImage"
             android:exported="false" />
         <activity
