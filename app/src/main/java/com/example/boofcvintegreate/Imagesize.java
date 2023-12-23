@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -43,6 +44,7 @@ public class Imagesize extends AppCompatActivity {
 
         previewView = findViewById(R.id.viewFinderimage);
         Button captureButton = findViewById(R.id.captureButton);
+        Button captureButton2 = findViewById(R.id.captureButton2);
         imageView1 = findViewById(R.id.imageView1);
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -52,6 +54,7 @@ public class Imagesize extends AppCompatActivity {
         }
 
         captureButton.setOnClickListener(view -> captureImage());
+        captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, QrCodeActivity.class)));
     }
 
 

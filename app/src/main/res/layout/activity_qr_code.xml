@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativelayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".QrCodeActivity">
+
+  <TextView
+      android:id="@+id/txt"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Hello"
+      android:textColor="@color/black"
+      android:textSize="40dp"
+      tools:ignore="MissingConstraints" />
+
+  <ImageView
+      android:id="@+id/imgscreen"
+      android:layout_below="@+id/txt"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:foregroundGravity="center"
+      android:layout_centerHorizontal="true"
+      android:layout_centerVertical="true" />
+
+  <ImageView
+      android:id="@+id/markerImageView"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:src="@drawable/img"
+      android:layout_below="@+id/imgscreen"
+      android:layout_centerHorizontal="true"
+      android:visibility="invisible" />
+  <ImageView
+      android:id="@+id/markerTopRight"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:src="@drawable/img"
+      android:layout_below="@+id/imgscreen"
+      android:layout_centerHorizontal="true"
+      android:visibility="invisible" />
+  <ImageView
+      android:id="@+id/markerBottomLeft"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:src="@drawable/img"
+      android:layout_below="@+id/imgscreen"
+      android:layout_centerHorizontal="true"
+      android:visibility="invisible" />
+  <ImageView
+      android:id="@+id/markerBottomRight"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:src="@drawable/img"
+      android:layout_below="@+id/imgscreen"
+      android:layout_centerHorizontal="true"
+      android:visibility="invisible" />
+
+</RelativeLayout>

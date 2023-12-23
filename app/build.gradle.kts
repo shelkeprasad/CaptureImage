@@ -52,6 +52,10 @@ dependencies {
     implementation ("androidx.camera:camera-view:1.4.0-alpha02")
     implementation ("androidx.camera:camera-view:1.3.0")
 
+    implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
+    implementation ("com.google.zxing:core:3.4.0")
+
+
 
 
 
