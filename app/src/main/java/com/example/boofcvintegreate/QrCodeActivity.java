@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -39,6 +40,8 @@ public class QrCodeActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     private CameraPreview cameraPreview;
     int PERMISSION_ALL = 1;
+    private ImageView[] markerImageViews = new ImageView[4];
+
     private ImageView imageView,markerImageView,markerImageViewTopLeft,markerImageViewTopRight,markerImageViewBottomLeft,markerImageViewBottomRight;
 
 
@@ -55,12 +58,18 @@ public class QrCodeActivity extends AppCompatActivity {
         super.onCreate(state);
         setContentView(R.layout.activity_qr_code);
 
-        imageView = findViewById(R.id.imgscreen);
-        markerImageView = findViewById(R.id.markerImageView);
-        markerImageViewTopLeft = findViewById(R.id.markerImageView);
+        imageView = findViewById(R.id.imageView);
+        markerImageViewTopLeft = findViewById(R.id.markerTopLeft);
         markerImageViewTopRight = findViewById(R.id.markerTopRight);
         markerImageViewBottomLeft = findViewById(R.id.markerBottomLeft);
         markerImageViewBottomRight = findViewById(R.id.markerBottomRight);
+
+        // new declare
+
+        markerImageViews[0] = findViewById(R.id.markerTopLeft);
+        markerImageViews[1] = findViewById(R.id.markerTopRight);
+        markerImageViews[2] = findViewById(R.id.markerBottomLeft);
+        markerImageViews[3] = findViewById(R.id.markerBottomRight);
 
 
 
@@ -135,9 +144,6 @@ public class QrCodeActivity extends AppCompatActivity {
             if (result.getContents() == null) {
                 Toast.makeText(this, "Scan canceled", Toast.LENGTH_SHORT).show();
             } else {
-                // function call
-             //   takeScreenshot();
-
                 String scannedData = result.getContents();
                 String filePath = result.getBarcodeImagePath();
                 Toast.makeText(this, "Scanned: " + scannedData, Toast.LENGTH_LONG).show();
@@ -146,13 +152,14 @@ public class QrCodeActivity extends AppCompatActivity {
                 if (imageFile.exists()) {
                     Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
                     if (bitmap != null) {
+                        imageView.setImageBitmap(bitmap);
+
                      //   int[] qrCodePosition = findQrCodePosition(bitmap);
                         ResultPoint[] resultPoints = findQrCodePositionValue(bitmap);
 
 
                         if (resultPoints != null) {
-                            setMarkerAtPosition(resultPoints);
-                            imageView.setImageBitmap(bitmap);
+                            setMarkerAtPosition(resultPoints,bitmap);
                             saveBitmapToStorage(bitmap);
                             String toastMessage = "QR Code Corners:\n" +
                                     "Top-left: (" + resultPoints[0].getX() + ", " + resultPoints[0].getY() + ")\n" +
@@ -206,54 +213,137 @@ public class QrCodeActivity extends AppCompatActivity {
         params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
         params.leftMargin = x;
         params.topMargin = y;
-        markerImageView.setLayoutParams(params);
-        markerImageView.setVisibility(View.VISIBLE);
+      //  markerImageView.setLayoutParams(params);
+     //   markerImageView.setVisibility(View.VISIBLE);
     }
-
-
-
-    private void setMarkerAtPosition(ResultPoint[] resultPoints) {
+  /*  private void setMarkerAtPosition(ResultPoint[] resultPoints) {
         if (resultPoints != null && resultPoints.length == 4) {
             ResultPoint topLeft = resultPoints[0];
             ResultPoint topRight = resultPoints[1];
             ResultPoint bottomLeft = resultPoints[2];
             ResultPoint bottomRight = resultPoints[3];
 
-            RelativeLayout.LayoutParams paramsTopLeft = new RelativeLayout.LayoutParams(
-                    30, 30
-            );
-            paramsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            paramsTopLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            paramsTopLeft.leftMargin = (int) topLeft.getX();
-            paramsTopLeft.topMargin = (int) topLeft.getY();
-            markerImageViewTopLeft.setLayoutParams(paramsTopLeft);
+            setMarkerLayoutParams(markerImageViewTopLeft, (int) topLeft.getX(), (int) topLeft.getY());
+            setMarkerLayoutParams(markerImageViewTopRight, (int) topRight.getX(), (int) topRight.getY());
+            setMarkerLayoutParams(markerImageViewBottomLeft, (int) bottomLeft.getX(), (int) bottomLeft.getY());
+            setMarkerLayoutParams(markerImageViewBottomRight, (int) bottomRight.getX(), (int) bottomRight.getY());
 
-            RelativeLayout.LayoutParams paramsTopRight = new RelativeLayout.LayoutParams(
-                    30, 30
-            );
-            paramsTopRight.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            paramsTopRight.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            paramsTopRight.leftMargin = (int) topRight.getX();
-            paramsTopRight.topMargin = (int) topRight.getY();
-            markerImageViewTopRight.setLayoutParams(paramsTopRight);
+            markerImageViewTopLeft.setVisibility(View.VISIBLE);
+            markerImageViewTopRight.setVisibility(View.VISIBLE);
+            markerImageViewBottomLeft.setVisibility(View.VISIBLE);
+            markerImageViewBottomRight.setVisibility(View.VISIBLE);
+        } else {
+            markerImageViewTopLeft.setVisibility(View.INVISIBLE);
+            markerImageViewTopRight.setVisibility(View.INVISIBLE);
+            markerImageViewBottomLeft.setVisibility(View.INVISIBLE);
+            markerImageViewBottomRight.setVisibility(View.INVISIBLE);
+        }
+    }*/
 
-            RelativeLayout.LayoutParams paramsBottomLeft = new RelativeLayout.LayoutParams(
-                    30, 30
-            );
-            paramsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            paramsBottomLeft.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            paramsBottomLeft.leftMargin = (int) bottomLeft.getX();
-            paramsBottomLeft.topMargin = (int) bottomLeft.getY();
-            markerImageViewBottomLeft.setLayoutParams(paramsBottomLeft);
 
-            RelativeLayout.LayoutParams paramsBottomRight = new RelativeLayout.LayoutParams(
-                    30, 30
+
+    ///////////// new
+
+    private void setMarkerAtPosition(ResultPoint[] resultPoints, Bitmap bitmap) {
+        if (resultPoints != null && resultPoints.length == 4) {
+            for (int i = 0; i < resultPoints.length; i++) {
+                setMarker(resultPoints[i], markerImageViews[i], bitmap);
+            }
+        } else {
+            Toast.makeText(this, "Qr point  not found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setMarker(ResultPoint point, ImageView markerImageView, Bitmap bitmap) {
+        ViewTreeObserver viewTreeObserver = imageView.getViewTreeObserver();
+        viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                int shownImageWidth = imageView.getWidth();
+                int shownImageHeight = imageView.getHeight();
+                Log.d("check width", String.valueOf(shownImageWidth));
+
+                float scaleX = bitmap.getWidth() / (float) shownImageWidth;
+                float scaleY = bitmap.getHeight() / (float) shownImageHeight;
+
+                int scaledX = (int) (point.getX() / scaleX);
+                int scaledY = (int) (point.getY() / scaleY);
+                Log.d("check height", String.valueOf(shownImageHeight));
+                Log.d("check scalex", String.valueOf(scaleX));
+                Log.d("check x", String.valueOf(scaleY));
+                Log.d("check x", String.valueOf(scaledX));
+                Log.d("check y", String.valueOf(scaledY));
+
+
+                setMarkerLayoutParams(markerImageView, scaledX, scaledY);
+
+                markerImageView.setVisibility(View.VISIBLE);
+
+                return true;
+            }
+        });
+    }
+
+    private void setMarkerLayoutParams(ImageView marker, int x, int y) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                30, 30
+        );
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        params.leftMargin = x;
+        params.topMargin = y;
+        marker.setLayoutParams(params);
+    }
+
+
+
+
+
+
+
+/*    private void setMarkerLayoutParams(ImageView marker, int x, int y) {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) marker.getLayoutParams();
+        if (params == null) {
+            params = new RelativeLayout.LayoutParams(
+                   20,
+                   20
             );
-            paramsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            paramsBottomRight.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            paramsBottomRight.leftMargin = (int) bottomRight.getX();
-            paramsBottomRight.topMargin = (int) bottomRight.getY();
-            markerImageViewBottomRight.setLayoutParams(paramsBottomRight);
+        }
+
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.leftMargin = x - marker.getWidth() / 2;
+        params.topMargin = y - marker.getHeight() / 2;
+        marker.setLayoutParams(params);
+    }*/
+
+  /*  private void setMarkerLayoutParams(ImageView marker, int x, int y) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                30,
+                30
+        );
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.leftMargin = x - marker.getWidth() / 2; // Adjust for the marker's width
+        params.topMargin = y - marker.getHeight() / 2; // Adjust for the marker's height
+        marker.setLayoutParams(params);
+    }*/
+
+
+
+/*    private void setMarkerAtPosition(ResultPoint[] resultPoints) {
+        if (resultPoints != null && resultPoints.length == 4) {
+            ResultPoint topLeft = resultPoints[0];
+            ResultPoint topRight = resultPoints[1];
+            ResultPoint bottomLeft = resultPoints[2];
+            ResultPoint bottomRight = resultPoints[3];
+
+            setMarkerLayoutParams(markerImageViewTopLeft, (int) topLeft.getX(), (int) topLeft.getY());
+            setMarkerLayoutParams(markerImageViewTopRight, (int) topRight.getX(), (int) topRight.getY());
+            setMarkerLayoutParams(markerImageViewBottomLeft, (int) bottomLeft.getX(), (int) bottomLeft.getY());
+            setMarkerLayoutParams(markerImageViewBottomRight, (int) bottomRight.getX(), (int) bottomRight.getY());
 
             markerImageViewTopLeft.setVisibility(View.VISIBLE);
             markerImageViewTopRight.setVisibility(View.VISIBLE);
@@ -266,6 +356,18 @@ public class QrCodeActivity extends AppCompatActivity {
             markerImageViewBottomRight.setVisibility(View.INVISIBLE);
         }
     }
+
+    private void setMarkerLayoutParams(ImageView marker, int x, int y) {
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                30, 30
+        );
+        params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+        params.leftMargin = x;
+        params.topMargin = y;
+        marker.setLayoutParams(params);
+    }*/
+
 
  /*   private void setMarkerAtPosition(ResultPoint[] resultPoints) {
         if (resultPoints != null && resultPoints.length == 4) {
@@ -406,7 +508,7 @@ public class QrCodeActivity extends AppCompatActivity {
                     }
                     Bitmap bitmap = originalBitmap.copy(originalBitmap.getConfig(), true);
                     rootView.setDrawingCacheEnabled(false);
-                    ImageView imageView = findViewById(R.id.imgscreen);
+                    ImageView imageView = findViewById(R.id.imageView);
 
                     imageView.setImageBitmap(bitmap);
                 }
