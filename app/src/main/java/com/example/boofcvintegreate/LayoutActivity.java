@@ -54,7 +54,6 @@ public class LayoutActivity extends AppCompatActivity {
                 return true;
             }
         });
-        // new add
 
         circleGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -82,7 +81,7 @@ public class LayoutActivity extends AppCompatActivity {
         });
 
         Bitmap originalCircleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.small_circle);
-        Bitmap originalRectangleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.small_circle);
+        Bitmap originalRectangleBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.rectangle_small);
 
         Bitmap resizedCircleBitmap = resizeBitmap(originalCircleBitmap, scaleFactor);
         Bitmap resizedRectangleBitmap = resizeBitmap(originalRectangleBitmap, scaleFactor);
@@ -137,19 +136,6 @@ public class LayoutActivity extends AppCompatActivity {
         rectangleImageView.setOnTouchListener(onTouchListener);
         textView.setOnTouchListener(onTouchListener);
 
- /*       circleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openVideos();
-            }
-        });
-
-        rectangleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openLink();
-            }
-        });*/
     }
 
     private void openVideos() {
@@ -189,8 +175,6 @@ public class LayoutActivity extends AppCompatActivity {
             scaleFactor *= detector.getScaleFactor();
             scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
 
-            // Implement scaling logic here
-            // You can apply scaling to your images or other views
             circleImageView.setScaleX(scaleFactor);
             circleImageView.setScaleY(scaleFactor);
 
