@@ -1,14 +1,12 @@
 package com.example.boofcvintegreate;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.session.MediaController;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -19,6 +17,7 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 public class LayoutActivity extends AppCompatActivity {
     private ImageView circleImageView;
@@ -34,6 +33,9 @@ public class LayoutActivity extends AppCompatActivity {
     private GestureDetector rectangleGestureDetector;
     private GestureDetector textGestureDetector;
 
+    private VideoView videoView;
+    private MediaController mediaController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,18 +49,18 @@ public class LayoutActivity extends AppCompatActivity {
 
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+     /*   gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 openVideos();
                 return true;
             }
-        });
+        });*/
 
         circleGestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-                openVideos();
+                openVideoView();
                 return true;
             }
         });
@@ -120,12 +122,6 @@ public class LayoutActivity extends AppCompatActivity {
                         lastY = event.getY();
                         break;
                     case MotionEvent.ACTION_UP:
-                        if (gestureDetector.onTouchEvent(event)) {
-                            // Click event handled by gestureDetector
-                        } else {
-                            // Click event handled manually
-                          //  openVideos();
-                        }
                         break;
                 }
                 return true;
@@ -141,7 +137,7 @@ public class LayoutActivity extends AppCompatActivity {
     private void openVideos() {
         String videoLink = "https://www.youtube.com/watch?v=15CdvG0RkKU";
 
-        if (videoLink.contains("youtube.com") || videoLink.contains("youtu.be")) {
+        if (videoLink!=null) {
             Toast.makeText(this, "click open video", Toast.LENGTH_SHORT).show();
 
             WebView webView = new WebView(this);
@@ -153,6 +149,21 @@ public class LayoutActivity extends AppCompatActivity {
             parent.addView(webView);
         } else {
             Toast.makeText(this, "Unsupported video link", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void openVideoView(){
+        String videoLink = "https://video-ssl.itunes.apple.com/itunes-assets/Video82/v4/a3/ef/25/a3ef253a-208e-3cbc-cbf0-bc444dae2f8d/mzvf_6313901593442783545.640x354.h264lc.U.p.m4v";
+
+        videoView = findViewById(R.id.videoview);
+        Toast.makeText(this, "click on circle  ...", Toast.LENGTH_SHORT).show();
+
+        if (videoLink!=null){
+            videoView.setMediaController(new android.widget.MediaController(this));
+
+            videoView.setVideoURI(Uri.parse(videoLink));
+            videoView.start();
+        }else {
+            Toast.makeText(this, "video url null ....", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -170,10 +181,21 @@ public class LayoutActivity extends AppCompatActivity {
     }
 
     private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        private boolean zoomingOut = false;
+
         @Override
         public boolean onScale(ScaleGestureDetector detector) {
-            scaleFactor *= detector.getScaleFactor();
-            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 5.0f));
+            float scaleFactorDelta = detector.getScaleFactor();
+
+            Log.d("ScaleFactor", String.valueOf(scaleFactorDelta));
+            if (scaleFactorDelta < 1.0f) {
+                zoomingOut = true;
+            } else {
+                zoomingOut = false;
+            }
+
+            scaleFactor *= scaleFactorDelta;
+            scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 3.0f));
 
             circleImageView.setScaleX(scaleFactor);
             circleImageView.setScaleY(scaleFactor);
@@ -186,8 +208,24 @@ public class LayoutActivity extends AppCompatActivity {
 
             return true;
         }
-    }
 
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            if (zoomingOut) {
+                scaleFactor = 1.0f;
+                Log.d("ScaleFactorend", String.valueOf(scaleFactor));
+
+                circleImageView.setScaleX(scaleFactor);
+                circleImageView.setScaleY(scaleFactor);
+
+                rectangleImageView.setScaleX(scaleFactor);
+                rectangleImageView.setScaleY(scaleFactor);
+
+                textView.setScaleX(scaleFactor);
+                textView.setScaleY(scaleFactor);
+            }
+        }
+    }
     private Bitmap resizeBitmap(Bitmap originalBitmap, float scale) {
         int width = Math.round(originalBitmap.getWidth() * scale);
         int height = Math.round(originalBitmap.getHeight() * scale);

@@ -22,8 +22,9 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:adjustViewBounds="false"
+        android:layout_below="@+id/circleImageView"
         android:src="@drawable/rectangle_img"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="50dp"/>
 
     <TextView
@@ -32,6 +33,16 @@
         android:layout_height="wrap_content"
         android:text="Hello Android...."
         android:textSize="20sp"
-        android:layout_marginTop="500dp"
+        android:layout_below="@+id/rectangleImageView"
+        android:layout_marginTop="50dp"
         android:layout_marginLeft="50dp"/>
+
+
+    <VideoView
+        android:id="@+id/videoview"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_below="@+id/textView"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="50dp"/>
 </RelativeLayout>
