@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativelayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/linearlayout"
     tools:context=".QrCodeActivity">
+<!--  <TextureView
+      android:id="@+id/textureview"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>-->
+  <android.view.TextureView
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/textureviewqrcode"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
 
   <TextView
       android:id="@+id/txt"
@@ -16,46 +27,50 @@
       android:textSize="40dp"
       tools:ignore="MissingConstraints" />
 
+  <me.dm7.barcodescanner.zxing.ZXingScannerView
+      android:id="@+id/scannerView"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"/>
+
   <ImageView
       android:id="@+id/imageView"
-      android:layout_below="@+id/txt"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
       android:foregroundGravity="center"
-      android:layout_centerHorizontal="true"
-      android:layout_centerVertical="true" />
+      android:layout_weight="1"/>
 
   <ImageView
       android:id="@+id/markerTopLeft"
       android:layout_width="20dp"
       android:layout_height="20dp"
       android:src="@drawable/img"
-      android:layout_below="@+id/imageView"
-      android:layout_centerHorizontal="true"
+      android:layout_gravity="center_horizontal"
       android:visibility="invisible" />
+
   <ImageView
       android:id="@+id/markerTopRight"
       android:layout_width="20dp"
       android:layout_height="20dp"
       android:src="@drawable/img"
-      android:layout_below="@+id/markerTopLeft"
-      android:layout_centerHorizontal="true"
+      android:layout_gravity="center_horizontal"
       android:visibility="invisible" />
+
   <ImageView
       android:id="@+id/markerBottomLeft"
       android:layout_width="20dp"
       android:layout_height="20dp"
       android:src="@drawable/img"
-      android:layout_below="@+id/markerTopRight"
-      android:layout_centerHorizontal="true"
+      android:layout_gravity="center_horizontal"
       android:visibility="invisible" />
+
   <ImageView
       android:id="@+id/markerBottomRight"
       android:layout_width="20dp"
       android:layout_height="20dp"
       android:src="@drawable/img"
-      android:layout_below="@+id/markerBottomLeft"
-      android:layout_centerHorizontal="true"
+      android:layout_gravity="center_horizontal"
       android:visibility="invisible" />
 
-</RelativeLayout>
+</LinearLayout>
+

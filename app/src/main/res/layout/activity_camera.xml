@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativelayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CameraActivity">
+
+    <android.view.TextureView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/textureview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:id="@+id/imgview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"/>
+    <VideoView
+        android:id="@+id/videoview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:visibility="gone"
+        android:layout_marginTop="30dp"/>
+
+    <ImageView
+        android:id="@+id/markerTopLeft"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/circle_red"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/markerTopRight"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/circle_red"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/markerBottomLeft"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/circle_red"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/markerBottomRight"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/circle_red"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible" />
+
+
+</RelativeLayout>

@@ -54,9 +54,9 @@ public class Imagesize extends AppCompatActivity {
         }
 
         captureButton.setOnClickListener(view -> captureImage());
-      //  captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, QrCodeActivity.class)));
+        captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, QrCodeActivity.class)));
        // captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, CanvasActivity.class)));
-        captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, LayoutActivity.class)));
+      //  captureButton2.setOnClickListener(view -> startActivity(new Intent(Imagesize.this, LayoutActivity.class)));
     }
 
 

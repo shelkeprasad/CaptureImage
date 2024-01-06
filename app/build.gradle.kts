@@ -31,6 +31,7 @@ android {
     }
 }
 
+
 dependencies {
 
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -55,5 +56,11 @@ dependencies {
 
     implementation ("com.journeyapps:zxing-android-embedded:4.1.0")
     implementation ("com.google.zxing:core:3.4.0")
+
+    implementation ("me.dm7.barcodescanner:zxing:1.9.8")
+
+
+
+
 
 }

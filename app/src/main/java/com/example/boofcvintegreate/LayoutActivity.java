@@ -193,7 +193,6 @@ public class LayoutActivity extends AppCompatActivity {
             } else {
                 zoomingOut = false;
             }
-
             scaleFactor *= scaleFactorDelta;
             scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 3.0f));
 
