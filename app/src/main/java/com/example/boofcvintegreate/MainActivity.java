@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -54,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
 
         previewView = findViewById(R.id.viewFinderimage);
         Button captureButton = findViewById(R.id.captureButton);
@@ -70,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
         captureButton.setOnClickListener(view -> captureImage());
         //  captureButtontwo.setOnClickListener(view -> captureImageTwo());
-        captureButtontwo.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, Imagesize.class)));
+       // captureButtontwo.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, Imagesize.class)));
+        captureButtontwo.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, QrCodeActivity.class)));
     }
 
     private void initializeCamera() {

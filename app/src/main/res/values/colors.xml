@@ -7,4 +7,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    // new add
+    <color name="progress_color">#96cbfd</color>
+    <color name="app_maroon">#9b3361</color>
+    <color name="light_pink">#efdfe5</color>
+    <color name="med_pink">#ddafc3</color>
+    <color name="neumorph_dark_shadow">#d8dee7</color>
+    <color name="google_red">#ff3d00</color>
+    <color name="new_white_background">#f4f4f4</color>
+    <color name="grey_color_text">#696969</color>
+    <color name="grey_color">#7e7e7e</color>
+    <color name="grey_color_dark">#d3d3d3</color>
+    <color name="grey_text">#6a6a6a</color>
+    <color name="nojob__color">#778196</color>
+    <color name="no_candidate__color">#696969</color>
+    <color name="grey_view">#e8e8e8</color>
+    <color name="pink_color_text">#d32972</color>
+    <color name="filter_line_grey_color">#dcdcdc</color>
 </resources>

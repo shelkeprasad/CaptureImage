@@ -35,13 +35,16 @@
         android:theme="@style/Theme.Boofcvintegreate"
         tools:targetApi="31">
         <activity
-            android:name=".VideoActivity"
-            android:exported="false" />
+            android:name=".SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".CameraActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ImagecheckActivity"
             android:exported="false" />
         <activity
             android:name=".LayoutActivity"
@@ -62,11 +65,11 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
+          <!--  <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
     </application>
 

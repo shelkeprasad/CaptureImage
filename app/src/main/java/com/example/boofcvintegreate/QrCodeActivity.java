@@ -4,31 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
-import androidx.camera.core.Preview;
-import androidx.camera.core.SurfaceRequest;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Consumer;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.SurfaceTexture;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.util.Size;
-import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,6 +39,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -64,6 +58,8 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ImageCapture imageCapture;
     private TextureView textureView;
+    public static TinyDB tinyDB;
+
 
     private ImageView imageView, markerImageView, markerImageViewTopLeft, markerImageViewTopRight, markerImageViewBottomLeft, markerImageViewBottomRight;
 
@@ -78,7 +74,10 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_qr_code);
+        tinyDB = new TinyDB(this);
+
 
         imageView = findViewById(R.id.imageView);
         txt = findViewById(R.id.txt);
@@ -234,33 +233,6 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
         //  markerImageView.setLayoutParams(params);
         //   markerImageView.setVisibility(View.VISIBLE);
     }
-  /*  private void setMarkerAtPosition(ResultPoint[] resultPoints) {
-        if (resultPoints != null && resultPoints.length == 4) {
-            ResultPoint topLeft = resultPoints[0];
-            ResultPoint topRight = resultPoints[1];
-            ResultPoint bottomLeft = resultPoints[2];
-            ResultPoint bottomRight = resultPoints[3];
-
-            setMarkerLayoutParams(markerImageViewTopLeft, (int) topLeft.getX(), (int) topLeft.getY());
-            setMarkerLayoutParams(markerImageViewTopRight, (int) topRight.getX(), (int) topRight.getY());
-            setMarkerLayoutParams(markerImageViewBottomLeft, (int) bottomLeft.getX(), (int) bottomLeft.getY());
-            setMarkerLayoutParams(markerImageViewBottomRight, (int) bottomRight.getX(), (int) bottomRight.getY());
-
-            markerImageViewTopLeft.setVisibility(View.VISIBLE);
-            markerImageViewTopRight.setVisibility(View.VISIBLE);
-            markerImageViewBottomLeft.setVisibility(View.VISIBLE);
-            markerImageViewBottomRight.setVisibility(View.VISIBLE);
-        } else {
-            markerImageViewTopLeft.setVisibility(View.INVISIBLE);
-            markerImageViewTopRight.setVisibility(View.INVISIBLE);
-            markerImageViewBottomLeft.setVisibility(View.INVISIBLE);
-            markerImageViewBottomRight.setVisibility(View.INVISIBLE);
-        }
-    }*/
-
-
-    ///////////// new
-
     private void setMarkerAtPosition(ResultPoint[] resultPoints, Bitmap bitmap) {
         if (resultPoints != null && resultPoints.length == 4) {
             for (int i = 0; i < resultPoints.length; i++) {
@@ -386,47 +358,6 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
         marker.setLayoutParams(params);
     }*/
 
-
- /*   private void setMarkerAtPosition(ResultPoint[] resultPoints) {
-        if (resultPoints != null && resultPoints.length == 4) {
-            ResultPoint topLeft = resultPoints[0];
-            ResultPoint topRight = resultPoints[1];
-            ResultPoint bottomLeft = resultPoints[2];
-            ResultPoint bottomRight = resultPoints[3];
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                    30, 30
-            );
-
-
-            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            params.leftMargin = (int) topLeft.getX();
-            params.topMargin = (int) topLeft.getY();
-
-            // top right
-
-            RelativeLayout.LayoutParams paramstopright = new RelativeLayout.LayoutParams(
-                    30, 30
-            );
-
-
-            paramstopright.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
-            paramstopright.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
-            paramstopright.leftMargin = (int) topLeft.getX();
-            paramstopright.topMargin = (int) topLeft.getY();
-
-
-            // Set the layout parameters only once
-            markerImageView.setLayoutParams(params);
-            markerImageView.setLayoutParams(paramstopright);
-
-            markerImageView.setVisibility(View.VISIBLE);
-        } else {
-            markerImageView.setVisibility(View.INVISIBLE);
-        }
-    }*/
-
     private int[] findQrCodePosition(Bitmap bitmap) {
         int[] position = null;
         try {
@@ -525,45 +456,6 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
 
 
     }
-
-    // new add
-
-    /*   private void takeScreenshot() {
-           View rootView = getWindow().getDecorView().getRootView();
-           if (rootView == null) {
-               Toast.makeText(this, "Failed to capture screenshot: Root view is null", Toast.LENGTH_SHORT).show();
-               return;
-           }
-
-           ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
-           if (viewTreeObserver.isAlive()) {
-               viewTreeObserver.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-                   @Override
-                   public boolean onPreDraw() {
-                       rootView.getViewTreeObserver().removeOnPreDrawListener(this);
-                       rootView.setDrawingCacheEnabled(true);
-
-                       Bitmap originalBitmap = rootView.getDrawingCache();
-                       if (originalBitmap == null || originalBitmap.getWidth() <= 0 || originalBitmap.getHeight() <= 0) {
-                           Toast.makeText(QrCodeActivity.this, "Failed to capture screenshot: Invalid bitmap", Toast.LENGTH_SHORT).show();
-                           rootView.setDrawingCacheEnabled(false);
-                           return true;
-                       }
-
-                       // Create a copy of the bitmap to avoid modifying the original
-                       Bitmap bitmap = originalBitmap.copy(originalBitmap.getConfig(), true);
-                       rootView.setDrawingCacheEnabled(false);
-
-                       // Save or display the screenshot as needed
-                       saveBitmapToStorage(bitmap);
-                       imageView.setImageBitmap(bitmap);
-
-                       Toast.makeText(QrCodeActivity.this, "Screenshot captured successfully", Toast.LENGTH_SHORT).show();
-                       return true;
-                   }
-               });
-           }
-       }*/
     public void saveBitmapToStorage(Bitmap bitmap) {
         Toast.makeText(this, "call save", Toast.LENGTH_SHORT).show();
         String fileName = "Qrscannormal.jpg";
@@ -592,28 +484,20 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
 
     @Override
     public void handleResult(Result result) {
-        Toast.makeText(this, "sucess .... open cameara", Toast.LENGTH_SHORT).show();
+        if (result != null && !result.getText().isEmpty()&&result.getResultPoints().length>=4){
+            Toast.makeText(this, "sucess ..open cameara", Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(QrCodeActivity.this, CameraActivity.class);
-        startActivity(intent);
-        finish();
+            ResultPoint[] resultPoints = result.getResultPoints();
+            Log.d("qrcodepoint", Arrays.toString(resultPoints));
+            tinyDB.putListResultPoint("resultPoints", new ArrayList<>(Arrays.asList(resultPoints)));
 
-
-
-       /* Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                scannerView.setVisibility(View.GONE);
-                setContentView(R.layout.activity_qr_code);
-
-                imageView.setVisibility(View.VISIBLE);
-                txt.setVisibility(View.VISIBLE);
-                initializeCamera();
-            }
-        }, 3000);*/
-
+          //  tinyDB.putListResultPoint("resultPoints", Arrays.asList(resultPoints));
+            Intent intent = new Intent(QrCodeActivity.this, CameraActivity.class);
+            startActivity(intent);
+            finish();
+        }else {
+            Toast.makeText(this, "Please scaned again ..", Toast.LENGTH_SHORT).show();
+        }
 
        /* scannerView.resumeCameraPreview(this);
 
@@ -719,49 +603,65 @@ public class QrCodeActivity extends AppCompatActivity implements ZXingScannerVie
         }, ContextCompat.getMainExecutor(this));
     }*/
 
-
-    private void initializeCamera() {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
-
-        cameraProviderFuture.addListener(() -> {
-            try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                LayoutInflater inflater = getLayoutInflater();
-                View rootView = inflater.inflate(R.layout.activity_qr_code, null);
-                TextureView textureView = findViewById(R.id.textureviewqrcode);
-
-                Preview preview = new Preview.Builder()
-                        .setTargetResolution(new Size(textureView.getWidth(), textureView.getHeight()))
-                        .setTargetRotation(textureView.getDisplay().getRotation())
-                        .build();
-
-                imageCapture = new ImageCapture.Builder().build();
-
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
-
-                preview.setSurfaceProvider(new Preview.SurfaceProvider() {
-                    @Override
-                    public void onSurfaceRequested(@NonNull SurfaceRequest request) {
-                        SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
-                        if (surfaceTexture != null) {
-                            request.provideSurface(new Surface(surfaceTexture),
-                                    ContextCompat.getMainExecutor(QrCodeActivity.this),
-
-                                    new Consumer<SurfaceRequest.Result>() {
-                                        @Override
-                                        public void accept(SurfaceRequest.Result result) {
-
-                                        }
-                                    });
-                        }
-                    }
-                });
-
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture);
-
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }, ContextCompat.getMainExecutor(this));
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (cameraProviderFuture != null) {
+            cameraProviderFuture.addListener(() -> {
+                ProcessCameraProvider cameraProvider = null;
+                try {
+                    cameraProvider = cameraProviderFuture.get();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                cameraProvider.unbindAll();
+            }, ContextCompat.getMainExecutor(this));
+        }
     }
+
+
+    // unused code
+  /*  ImageCapture imageCapture = new ImageCapture.Builder()
+            .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+            .build();
+
+            imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
+        @Override
+        public void onCaptureSuccess(@NonNull ImageProxy image) {
+            super.onCaptureSuccess(image);
+
+            int width = image.getWidth();
+            int height = image.getHeight();
+            Log.d("CapturedImageSize", "Width: " + width + ", Height: " + height);
+
+            image.close();
+        }
+
+        @Override
+        public void onError(@NonNull ImageCaptureException exception) {
+            super.onError(exception);
+        }
+    });*/
+
+
+    // share point
+
+/*
+        if (result!= null){
+            ArrayList<PointF> pointsList = new ArrayList<>();
+            for (ResultPoint resultPoint : result.getResultPoints()) {
+                pointsList.add(new PointF((float) resultPoint.getX(), (float) resultPoint.getY()));
+            }
+            Intent intent = new Intent(QrCodeActivity.this, CameraActivity.class);
+            intent.putParcelableArrayListExtra("resultPoints", pointsList);
+
+            //   Intent intent = new Intent(QrCodeActivity.this, CameraActivity.class);
+            //  intent.putExtra("resultPoints", resultPoints);
+            startActivity(intent);
+            finish();
+        }else {
+            Toast.makeText(this, "Result are getting null ..", Toast.LENGTH_SHORT).show();
+        }*/
 }
